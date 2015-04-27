@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+$stdout.sync = true
+$stderr.sync = true
+
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+
+require "push2docker"
+
+app_name, build_dir, buildpack_url, cache_dir, output_dir = ARGV
+abort "USAGE: #{$0} APP_NAME BUILD_DIR BUILDPACK_DIR CACHE_DIR OUTPUT_DIR" unless ARGV.size == 5 and
+  File.exists?(build_dir) and File.exists?(cache_dir) and
+  URI.parse(buildpack_url) rescue false and File.directory?(output_dir)
+
+Push2Docker.run(*ARGV)

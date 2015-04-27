@@ -1,0 +1,70 @@
+#!/bin/sh
+
+STACK=cflinuxfs2
+APP_PATH=.
+
+APP_NAME=$1
+shift
+
+while :; do
+  case $1 in
+    -s)
+    STACK="$2"
+    shift 2
+    ;;
+    -p)
+    APP_PATH="$2"
+    shift 2
+    ;;
+    -b)
+    BUILDPACK_PATH="$2"
+    shift 2
+    ;;
+    -e)
+    ENV_VARS="$ENV_VARS -e $2"
+    shift 2
+    ;;
+    --)
+    shift
+    break
+    ;;
+    *)
+    break
+  esac
+done
+
+if [ -z "$BUILDPACK_PATH" ]; then
+  echo "Buildpack path must be specified."
+  exit 1
+fi
+
+if [ ! -e "$APP_PATH" ]; then
+  echo "Path to application is not valid."
+  exit 1
+fi
+
+DOCKER_BIN=`which docker`
+DOCKER_ARGS="-v /var/run/docker.sock:/run/docker.sock -v $DOCKER_BIN:/bin/docker -v $PWD:/scripts -e CF_STACK=$STACK"
+
+if [ -d "$BUILDPACK_PATH" ]; then
+  DOCKER_ARGS="$DOCKER_ARGS -v $BUILDPACK_PATH:/tmp/buildpack"
+  BUILDPACK_URL="/tmp/buildpack"
+else
+  BUILDPACK_URL=$BUILDPACK_PATH
+fi
+
+DOCKER_ARGS="$DOCKER_ARGS -v $APP_PATH:/app.x"
+
+echo "App name: $APP_NAME"
+echo "App path: $APP_PATH"
+echo "Buildpack: $BUILDPACK_PATH"
+echo "Stack: $STACK"
+echo "Environment variables: $ENV_VARS"
+
+DOCKER_CMD="docker run -it $DOCKER_ARGS $ENV_VARS cloudfoundry/cflinuxfs2"
+DOCKER_CMD_ARGS="/scripts/push2docker/bin/push2docker $APP_NAME /app.x $BUILDPACK_URL /scripts/buildpack_cache /"
+
+echo "Docker run cmd: $DOCKER_CMD"
+echo "Docker run args: $DOCKER_CMD_ARGS"
+
+sudo $DOCKER_CMD $DOCKER_CMD_ARGS
