@@ -8,11 +8,11 @@ You can use `push2docker` to create a Docker image that very closely resembles a
 
 ## Usage
 
-1. Create a directory and clone this project.
-2. Run `./push2docker/push <appName> -p <PATH> -b <BUILDPACK_URL>` to create the Docker image. For example:
+1. Clone this project.
+2. In the `push2docker` directory run `./push <appName> -p <PATH> -b <BUILDPACK_URL>` to create the Docker image. For example:
 
 ```bash
-$  ./push2docker/push ferret -p ferret.war -b https://github.com/cloudfoundry/java-buildpack
+$  ./push ferret -p ferret.war -b https://github.com/cloudfoundry/java-buildpack
 ```
 3. The created Docker image will the tagged with the given `<appName>`. Once the image is created you can run it, for example:
 

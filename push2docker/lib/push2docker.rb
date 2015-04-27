@@ -20,6 +20,9 @@ module Push2Docker
     stage_dir = "#{tmp_dir}/staged"
     build_dir = "#{stage_dir}/app"
 
+    # ensure cache_dir exists
+    FileUtils.mkdir_p(cache_dir)
+
     FileUtils.mkdir_p(build_dir)
 
     if File.exist?(app_path)
