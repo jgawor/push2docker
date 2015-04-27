@@ -180,7 +180,7 @@ module Push2Docker
     docker_file.puts('RUN chown -R vcap:vcap /home/vcap')
     docker_file.puts('ENV HOME /home/vcap/app')
     docker_file.puts('ENV TMPDIR /home/vcap/tmp')
-    docker_file.puts("ENV VCAP_APPLICATION #{vcap_application}")
+    docker_file.puts("ENV VCAP_APPLICATION \'#{vcap_application}\'")
     docker_file.puts("ENV VCAP_APP_HOST #{VCAP_APP_HOST}")
     docker_file.puts("ENV VCAP_APP_PORT #{VCAP_APP_PORT}")
     docker_file.puts("ENV PORT #{VCAP_APP_PORT}")

@@ -12,8 +12,16 @@ You can use `push2docker` to create a Docker image that very closely resembles a
 2. In the `push2docker` directory run `./push <appName> -p <PATH> -b <BUILDPACK_URL>` to create the Docker image. For example:
 
 ```bash
-$  ./push ferret -p ferret.war -b https://github.com/cloudfoundry/java-buildpack
+$  ./push ferret -p /samples/ferret.war -b https://github.com/cloudfoundry/java-buildpack
 ```
+You can pass additional environment variables using `-e` option. For example:
+
+```bash
+$ ./push ferret -p /samples/ferret.war -b https://github.com/cloudfoundry/ibm-websphere-liberty-buildpack.git -e IBM_JVM_LICENSE=XXX -e IBM_LIBERTY_LICENSE=YYY
+```
+
+The `<PATH>` value for `-p` argument must be an absolute path to a file or a directory.
+
 3. The created Docker image will the tagged with the given `<appName>`. Once the image is created you can run it, for example:
 
 ```bash
