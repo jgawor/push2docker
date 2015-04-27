@@ -17,6 +17,6 @@ $  ./push ferret -p ferret.war -b https://github.com/cloudfoundry/java-buildpack
 3. The created Docker image will the tagged with the given `<appName>`. Once the image is created you can run it, for example:
 
 ```bash
-$ docker run -t ferret -p 8080:8080
+$ docker run -t -p 8080:8080 ferret
 ```
 
