@@ -27,7 +27,7 @@ module Push2Docker
 
     if File.exist?(app_path)
       if File.file?(app_path)
-        system "unzip #{app_path} -d #{build_dir}"
+        system "unzip -q #{app_path} -d #{build_dir}"
       else
         FileUtils.cp_r("#{app_path}/.", "#{build_dir}")
       end
@@ -75,13 +75,15 @@ module Push2Docker
     end
     
   ensure
-    FileUtils.rm_rf(buildpack_dir) unless File.directory?(buildpack_url)
+    if !buildpack_dir.nil? && !File.directory?(buildpack_url)
+      FileUtils.rm_rf(buildpack_dir)
+    end
   end
 
   def fetch_buildpack(buildpack_url)
     buildpack_dir = "/tmp/buildpack_#{@compile_id}"
 
-    Timeout.timeout((ENV["BUILDPACK_FETCH_TIMEOUT"] || 90).to_i) do
+    Timeout.timeout((ENV["BUILDPACK_FETCH_TIMEOUT"] || 60 * 5).to_i) do
       FileUtils.mkdir_p(buildpack_dir)
       if buildpack_url =~ /^https?:\/\/.*\.(tgz|tar\.gz)($|\?)/
         print("-----> Fetching buildpack... ")
@@ -105,7 +107,8 @@ module Push2Docker
 
     buildpack_dir
   rescue StandardError, Timeout::Error => e
-    raise("Error fetching buildpack")
+    FileUtils.rm_rf(buildpack_dir)
+    raise("Error fetching buildpack: " + e.message)
   end
 
   def detect(build_dir, buildpack_dir)
