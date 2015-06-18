@@ -94,7 +94,7 @@ module Push2Docker
         print("-----> Cloning buildpack... ")
         url, sha = buildpack_url.split("#")
         clear_var("GIT_DIR") do
-          system("git", "clone", Shellwords.escape(url), buildpack_dir,
+          system("git", "clone", "--recursive", Shellwords.escape(url), buildpack_dir,
                  [:out, :err] => "/dev/null") # or raise("Couldn't clone")
           system("git", "checkout", Shellwords.escape(treeish),
                  [:out, :err] => "/dev/null", :chdir => buildpack_dir) if sha
