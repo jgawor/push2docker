@@ -125,7 +125,7 @@ module Push2Docker
     bin_compile = File.join(buildpack_dir, 'bin', 'compile')
     timeout = (ENV["COMPILE_TIMEOUT"] || 900).to_i
     Timeout.timeout(timeout) do
-      pid = spawn({}, bin_compile, build_dir, cache_dir,
+      pid = spawn(stage_env, bin_compile, build_dir, cache_dir,
                   unsetenv_others: false, err: :out)
       Process.wait(pid)
       raise("Compile failed") unless $?.exitstatus.zero?
@@ -199,16 +199,23 @@ module Push2Docker
     vcap_app['host'] = VCAP_APP_HOST
     vcap_app['port'] = VCAP_APP_PORT
     vcap_app['name'] = vcap_app['application_name'] = @app_name
+    vcap_app['application_uris'] = [ "http://#{@app_name}" ]
     vcap_app['application_id'] = '0'
     vcap_app['instance_index'] = 0
     vcap_app.to_json
   end
 
-  VCAP_APP_PORT = "8080".freeze
+  VCAP_APP_PORT = "8888".freeze
   VCAP_APP_HOST = "0.0.0.0".freeze
 
   def cf_stack
     ENV['CF_STACK'] || 'lucid64'
+  end
+
+  def stage_env
+    env = ENV.to_hash
+    env["VCAP_APPLICATION"] = vcap_application if env["VCAP_APPLICATION"].nil?
+    env
   end
 
   # utils
